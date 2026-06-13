@@ -86,9 +86,16 @@ function SoftLandingPage() {
                       </span>
                     )}
                   </div>
-                  <h3 className="mt-2 font-serif text-lg font-semibold leading-snug">
-                    {it.title}
-                  </h3>
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="mt-2 font-serif text-lg font-semibold leading-snug flex-1">
+                      {it.title}
+                    </h3>
+                    {(it.category === "match" || it.category === "host") && (
+                      <button className="text-[11px] text-muted-foreground hover:text-ink flex items-center gap-1 shrink-0">
+                        <span>■</span> Report
+                      </button>
+                    )}
+                  </div>
                   <p className="mt-1 text-sm text-muted-foreground flex-1">{it.subtitle}</p>
                   {(it.date || it.attendees) && (
                     <p className="mt-3 text-xs text-muted-foreground">
@@ -97,13 +104,20 @@ function SoftLandingPage() {
                       {it.attendees ? `${it.attendees} going` : ""}
                     </p>
                   )}
-                  <button className="mt-5 bg-ink text-canvas text-sm font-medium px-4 py-2 rounded-lg hover:bg-ink/90">
-                    {it.category === "match" || it.category === "host"
-                      ? "Request intro"
-                      : it.category === "guide"
-                      ? "Read guide"
-                      : "Join"}
-                  </button>
+                  {it.category === "match" || it.category === "host" ? (
+                    <div className="mt-5">
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        All introductions are reviewed by our team. We suggest first meetings in a public place. HomeBridge does not share contact details until both parties confirm.
+                      </p>
+                      <button className="mt-3 bg-ink text-canvas text-sm font-medium px-4 py-2 rounded-lg hover:bg-ink/90">
+                        Request intro (admin reviews within 24h)
+                      </button>
+                    </div>
+                  ) : (
+                    <button className="mt-5 bg-ink text-canvas text-sm font-medium px-4 py-2 rounded-lg hover:bg-ink/90">
+                      {it.category === "guide" ? "Read guide" : "Join"}
+                    </button>
+                  )}
                 </div>
               </article>
             ))}

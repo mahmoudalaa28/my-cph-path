@@ -124,9 +124,9 @@ function OnboardingPage() {
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-              Onboarding · Step {stepNum} of {totalSteps}
+              {isIntro ? "Onboarding" : `Onboarding · Step ${stepNum} of ${totalSteps}`}
             </span>
-            <span className="text-xs text-muted-foreground">{pct}%</span>
+            {!isIntro && <span className="text-xs text-muted-foreground">{pct}%</span>}
           </div>
           <div className="h-1 bg-muted rounded-full overflow-hidden mb-10">
             <div

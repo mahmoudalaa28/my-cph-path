@@ -347,7 +347,8 @@ function DashboardPage() {
 
       {explainTask && (
         <ExplainerDialog
-          task={explainTask}
+          task={explainTask.task}
+          initialTab={explainTask.tab}
           open={!!explainTask}
           onClose={() => setExplainTask(null)}
         />

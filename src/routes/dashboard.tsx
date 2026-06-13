@@ -265,7 +265,6 @@ function DashboardPage() {
                             !!(t.blockedBy && statuses[t.blockedBy] !== "done")
                           }
                           onStatus={(s) => setStatus(t.id, s)}
-                          onExplain={() => setExplainTask(t)}
                         />
                       ))}
                     </ul>

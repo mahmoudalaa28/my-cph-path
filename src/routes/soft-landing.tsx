@@ -30,6 +30,16 @@ function getCategoryEmoji(category: string) {
   return map[category] ?? "✨";
 }
 
+export const Route = createFileRoute("/soft-landing")({
+  head: () => ({
+    meta: [
+      { title: "Soft landing — HomeBridge" },
+      { name: "description", content: "Curated events, host families, language exchanges and meetups to help you feel at home in Copenhagen." },
+    ],
+  }),
+  component: SoftLandingPage,
+});
+
 const AUDIENCES = [
   { id: "individual", label: "Individuals" },
   { id: "couple", label: "Couples" },

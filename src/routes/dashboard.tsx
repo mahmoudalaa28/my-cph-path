@@ -157,17 +157,19 @@ function DashboardPage() {
                 </ul>
               </Card>
 
-              <Card title="Documents you'll need">
-                <div className="flex flex-wrap gap-1.5">
-                  {allDocs.map((d) => (
-                    <span
-                      key={d}
-                      className="text-xs px-2 py-1 bg-stone-50 ring-1 ring-border rounded-md"
-                    >
-                      {d}
-                    </span>
-                  ))}
+              <Card title="Documents at a glance">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <DocStat label="Missing" value={docCounts.missing} tone="warn" />
+                  <DocStat label="Ready" value={docCounts.ready} tone="ok" />
+                  <DocStat label="Uploaded" value={docCounts.uploaded} tone="ok" />
+                  <DocStat label="Not applicable" value={docCounts["n/a"]} tone="mute" />
                 </div>
+                <a
+                  href="#documents-needed"
+                  className="mt-4 inline-flex text-xs font-semibold text-accent hover:underline"
+                >
+                  Manage documents →
+                </a>
               </Card>
 
               <Card title="Upcoming deadlines">

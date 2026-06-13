@@ -30,7 +30,7 @@ function DashboardPage() {
   const [docStatuses, setDocStatuses] = useState<Record<string, DocStatus>>(
     Object.fromEntries(DOCUMENTS.map((d) => [d.id, d.status]))
   );
-  const [explainTask, setExplainTask] = useState<RelocationTask | null>(null);
+  const [explainTask, setExplainTask] = useState<{ task: RelocationTask; tab: "explain" | "template" } | null>(null);
 
   const visible = useMemo(
     () =>

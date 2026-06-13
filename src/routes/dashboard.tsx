@@ -24,12 +24,28 @@ function DashboardPage() {
     } catch {}
   }, []);
 
-  const [statuses, setStatuses] = useState<Record<string, TaskStatus>>(
-    Object.fromEntries(TASKS.map((t) => [t.id, t.status]))
-  );
-  const [docStatuses, setDocStatuses] = useState<Record<string, DocStatus>>(
-    Object.fromEntries(DOCUMENTS.map((d) => [d.id, d.status]))
-  );
+  const [statuses, setStatuses] = useState<Record<string, TaskStatus>>(() => {
+    try {
+      const saved = localStorage.getItem("homebridge.task-status");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return Object.fromEntries(TASKS.map((t) => [t.id, t.status]));
+  });
+  const [docStatuses, setDocStatuses] = useState<Record<string, DocStatus>>(() => {
+    try {
+      const saved = localStorage.getItem("homebridge.doc-status");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return Object.fromEntries(DOCUMENTS.map((d) => [d.id, d.status]));
+  });
+
+  useEffect(() => {
+    localStorage.setItem("homebridge.task-status", JSON.stringify(statuses));
+  }, [statuses]);
+
+  useEffect(() => {
+    localStorage.setItem("homebridge.doc-status", JSON.stringify(docStatuses));
+  }, [docStatuses]);
   const [explainTask, setExplainTask] = useState<{ task: RelocationTask; tab: "explain" | "template" } | null>(null);
 
   const visible = useMemo(

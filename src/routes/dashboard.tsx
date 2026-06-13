@@ -114,11 +114,11 @@ function DashboardPage() {
               Your roadmap
             </span>
             <h1 className="mt-2 font-serif text-3xl md:text-4xl font-medium leading-tight">
-              Welcome, {DEMO_USER.name.split(" ")[0]}.
+              Welcome, {profile.name.split(" ")[0]}.
             </h1>
             <p className="mt-2 text-muted-foreground">
-              {DEMO_USER.type === "family" ? "Family of four" : DEMO_USER.type} · {DEMO_USER.origin} →{" "}
-              {DEMO_USER.destination} · Arrived {new Date(DEMO_USER.arrivalDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+              {profile.type === "family" ? "Family of four" : profile.type} · {profile.origin} →{" "}
+              {profile.destination} · Arrived {new Date(profile.arrivalDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
             </p>
           </div>
 

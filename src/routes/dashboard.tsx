@@ -273,6 +273,7 @@ function DashboardPage() {
                             !!(t.blockedBy && statuses[t.blockedBy] !== "done")
                           }
                           onStatus={(s) => setStatus(t.id, s)}
+                          onExplain={(tab) => setExplainTask({ task: t, tab })}
                         />
                       ))}
                     </ul>

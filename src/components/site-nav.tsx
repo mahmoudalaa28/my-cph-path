@@ -15,6 +15,9 @@ export function SiteNav() {
             <Link to="/checklist" className="hover:text-ink transition-colors" activeProps={{ className: "text-ink" }}>
               Checklist
             </Link>
+            <Link to="/templates" className="hover:text-ink transition-colors" activeProps={{ className: "text-ink" }}>
+              Templates
+            </Link>
             <Link to="/soft-landing" className="hover:text-ink transition-colors" activeProps={{ className: "text-ink" }}>
               Soft Landing
             </Link>

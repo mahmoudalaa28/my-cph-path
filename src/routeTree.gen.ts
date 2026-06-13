@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as SoftLandingRouteImport } from './routes/soft-landing'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as EmployerRouteImport } from './routes/employer'
@@ -17,6 +18,11 @@ import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TemplatesRoute = TemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SoftLandingRoute = SoftLandingRouteImport.update({
   id: '/soft-landing',
   path: '/soft-landing',
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/employer': typeof EmployerRoute
   '/onboarding': typeof OnboardingRoute
   '/soft-landing': typeof SoftLandingRoute
+  '/templates': typeof TemplatesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/employer': typeof EmployerRoute
   '/onboarding': typeof OnboardingRoute
   '/soft-landing': typeof SoftLandingRoute
+  '/templates': typeof TemplatesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/employer': typeof EmployerRoute
   '/onboarding': typeof OnboardingRoute
   '/soft-landing': typeof SoftLandingRoute
+  '/templates': typeof TemplatesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/employer'
     | '/onboarding'
     | '/soft-landing'
+    | '/templates'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/employer'
     | '/onboarding'
     | '/soft-landing'
+    | '/templates'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/employer'
     | '/onboarding'
     | '/soft-landing'
+    | '/templates'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,10 +131,18 @@ export interface RootRouteChildren {
   EmployerRoute: typeof EmployerRoute
   OnboardingRoute: typeof OnboardingRoute
   SoftLandingRoute: typeof SoftLandingRoute
+  TemplatesRoute: typeof TemplatesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/templates': {
+      id: '/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof TemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/soft-landing': {
       id: '/soft-landing'
       path: '/soft-landing'
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmployerRoute: EmployerRoute,
   OnboardingRoute: OnboardingRoute,
   SoftLandingRoute: SoftLandingRoute,
+  TemplatesRoute: TemplatesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

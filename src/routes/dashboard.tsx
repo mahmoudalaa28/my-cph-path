@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteNav, SiteFooter } from "@/components/site-nav";
 import { TASKS, STAGES, DEMO_USER, FIRST_WEEK_MISSIONS, DOCUMENTS, DOC_AUDIENCE_LABELS, SOFT_LANDING } from "@/lib/homebridge-data";
 import type { RelocationTask, TaskStatus, RelocationDocument, DocStatus, DocAudience } from "@/lib/homebridge-data";

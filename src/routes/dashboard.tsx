@@ -332,6 +332,8 @@ function DashboardPage() {
               </div>
             </section>
           </div>
+
+          <FeelAtHomeSection type={DEMO_USER.type} />
         </div>
       </main>
 

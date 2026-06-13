@@ -77,15 +77,12 @@ function SoftLandingPage() {
                 key={it.id}
                 className="bg-surface rounded-2xl ring-1 ring-border overflow-hidden shadow-sm flex flex-col"
               >
-                <div className="aspect-[4/3] overflow-hidden bg-muted">
-                  <img
-                    src={IMAGE_POOL[i % IMAGE_POOL.length]}
-                    alt={it.title}
-                    loading="lazy"
-                    width={800}
-                    height={600}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                  />
+                <div
+                  className={`aspect-[4/3] overflow-hidden ${CATEGORY_COLORS[it.category] ?? "bg-muted"} grid place-items-center`}
+                >
+                  <span className="text-4xl" aria-hidden="true">
+                    {getCategoryEmoji(it.category)}
+                  </span>
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
                   <div className="flex items-center justify-between gap-2">

@@ -56,7 +56,7 @@ function OnboardingPage() {
 
   // Step list adapts to type
   const steps = useMemo<string[]>(() => {
-    const base = ["who", "reason", "origin", "job", "housing", "date"];
+    const base = ["intro", "who", "reason", "origin", "job", "housing", "date"];
     if (type === "family") base.push("children");
     if (type === "couple") base.push("partner");
     base.push("danish", "status", "stress");
@@ -65,9 +65,12 @@ function OnboardingPage() {
 
   const [stepIndex, setStepIndex] = useState(0);
   const currentStep = steps[Math.min(stepIndex, steps.length - 1)];
-  const stepNum = stepIndex + 1;
-  const totalSteps = steps.length;
-  const pct = Math.round((stepNum / totalSteps) * 100);
+  const isIntro = currentStep === "intro";
+  const questionIndex = Math.max(0, stepIndex - 1);
+  const questionSteps = steps.length - 1;
+  const stepNum = questionIndex + 1;
+  const totalSteps = questionSteps;
+  const pct = isIntro ? 0 : Math.round((stepNum / totalSteps) * 100);
 
   const setStatus = (k: StatusKey, v: "yes" | "in-progress" | "no") =>
     setStatuses((s) => ({ ...s, [k]: v }));
@@ -121,9 +124,9 @@ function OnboardingPage() {
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-              Onboarding · Step {stepNum} of {totalSteps}
+              {isIntro ? "Onboarding" : `Onboarding · Step ${stepNum} of ${totalSteps}`}
             </span>
-            <span className="text-xs text-muted-foreground">{pct}%</span>
+            {!isIntro && <span className="text-xs text-muted-foreground">{pct}%</span>}
           </div>
           <div className="h-1 bg-muted rounded-full overflow-hidden mb-10">
             <div
@@ -133,6 +136,23 @@ function OnboardingPage() {
           </div>
 
           <div className="bg-surface rounded-2xl ring-1 ring-border shadow-sm p-8 md:p-12">
+            {currentStep === "intro" && (
+              <div className="text-center">
+                <h2 className="font-serif text-2xl md:text-3xl font-medium leading-tight">
+                  Let's build your Copenhagen roadmap.
+                </h2>
+                <p className="mt-4 text-muted-foreground leading-relaxed max-w-md mx-auto">
+                  We'll ask 10 quick questions. Your answers generate a task roadmap that is specific to your nationality, family situation, job status, and arrival date.
+                </p>
+                <button
+                  onClick={next}
+                  className="mt-8 bg-ink text-canvas px-6 py-3 rounded-lg font-medium ring-1 ring-ink hover:bg-ink/90 transition-colors"
+                >
+                  Start →
+                </button>
+              </div>
+            )}
+
             {currentStep === "who" && (
               <Section
                 title="Who are you moving as?"

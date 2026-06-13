@@ -38,18 +38,17 @@ function LandingPage() {
               Copenhagen Relocation Copilot
             </span>
             <h1 className="mt-4 font-serif text-4xl md:text-6xl font-medium leading-[1.05] tracking-tight text-balance">
-              Relocate smoothly. Know exactly what to do next.
+              Copenhagen bureaucracy, untangled. Know exactly what to do — and when.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-[56ch] text-pretty">
-              HomeBridge gives newcomers a personalized relocation admin roadmap,
-              document checklist, deadline tracker, and local soft-landing support.
+              24 verified tasks. 5 stages. Every deadline, every document, every common mistake — in the right order. Built for Copenhagen relocators.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/onboarding"
                 className="bg-ink text-canvas px-6 py-3 rounded-lg font-medium ring-1 ring-ink hover:bg-ink/90 transition-colors"
               >
-                Create my relocation roadmap
+                Build my Copenhagen roadmap →
               </Link>
               <Link
                 to="/employer"

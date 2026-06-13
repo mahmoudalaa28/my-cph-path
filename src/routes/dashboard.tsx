@@ -376,11 +376,13 @@ function TaskRow({
   status,
   isBlocked,
   onStatus,
+  onExplain,
 }: {
   task: RelocationTask;
   status: TaskStatus;
   isBlocked: boolean;
   onStatus: (s: TaskStatus) => void;
+  onExplain: (tab: "explain" | "template") => void;
 }) {
   const done = status === "done";
   const [expanded, setExpanded] = useState(false);

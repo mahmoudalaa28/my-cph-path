@@ -758,13 +758,23 @@ function FeelAtHomeSection({ type }: { type: "individual" | "couple" | "family" 
                     </span>
                   )}
                 </div>
-                <h4 className="mt-2 font-serif text-base font-semibold leading-snug">
-                  {it.title}
-                </h4>
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="mt-2 font-serif text-base font-semibold leading-snug flex-1">
+                    {it.title}
+                  </h4>
+                  <button className="text-[11px] text-muted-foreground hover:text-ink flex items-center gap-1 shrink-0">
+                    <span>■</span> Report
+                  </button>
+                </div>
                 <p className="mt-1 text-sm text-muted-foreground flex-1">{it.subtitle}</p>
-                <button className="mt-4 self-start bg-ink text-canvas text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-ink/90">
-                  Request intro
-                </button>
+                <div className="mt-4">
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    All introductions are reviewed by our team. We suggest first meetings in a public place. HomeBridge does not share contact details until both parties confirm.
+                  </p>
+                  <button className="mt-3 self-start bg-ink text-canvas text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-ink/90">
+                    Request intro (admin reviews within 24h)
+                  </button>
+                </div>
               </article>
             ))}
           </div>

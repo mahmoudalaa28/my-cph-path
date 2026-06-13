@@ -146,7 +146,7 @@ function DashboardPage() {
                   {urgent.map((t) => (
                     <li key={t.id}>
                       <button
-                        onClick={() => setExplainTask(t)}
+                        onClick={() => setExplainTask({ task: t, tab: "explain" })}
                         className="w-full text-left p-3 -mx-2 rounded-xl hover:bg-muted transition-colors flex items-start gap-3"
                       >
                         <span className="mt-1 size-2 rounded-full bg-accent shrink-0" />

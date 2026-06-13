@@ -5,12 +5,14 @@ export function ExplainerDialog({
   task,
   open,
   onClose,
+  initialTab = "explain",
 }: {
   task: RelocationTask;
   open: boolean;
   onClose: () => void;
+  initialTab?: "explain" | "template";
 }) {
-  const [tab, setTab] = useState<"explain" | "template">("explain");
+  const [tab, setTab] = useState<"explain" | "template">(initialTab);
   if (!open) return null;
 
   return (

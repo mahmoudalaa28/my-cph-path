@@ -30,7 +30,7 @@ function DashboardPage() {
   const [docStatuses, setDocStatuses] = useState<Record<string, DocStatus>>(
     Object.fromEntries(DOCUMENTS.map((d) => [d.id, d.status]))
   );
-  const [explainTask, setExplainTask] = useState<RelocationTask | null>(null);
+  const [explainTask, setExplainTask] = useState<{ task: RelocationTask; tab: "explain" | "template" } | null>(null);
 
   const visible = useMemo(
     () =>
@@ -146,7 +146,7 @@ function DashboardPage() {
                   {urgent.map((t) => (
                     <li key={t.id}>
                       <button
-                        onClick={() => setExplainTask(t)}
+                        onClick={() => setExplainTask({ task: t, tab: "explain" })}
                         className="w-full text-left p-3 -mx-2 rounded-xl hover:bg-muted transition-colors flex items-start gap-3"
                       >
                         <span className="mt-1 size-2 rounded-full bg-accent shrink-0" />
@@ -273,6 +273,7 @@ function DashboardPage() {
                             !!(t.blockedBy && statuses[t.blockedBy] !== "done")
                           }
                           onStatus={(s) => setStatus(t.id, s)}
+                          onExplain={(tab) => setExplainTask({ task: t, tab })}
                         />
                       ))}
                     </ul>
@@ -347,7 +348,8 @@ function DashboardPage() {
 
       {explainTask && (
         <ExplainerDialog
-          task={explainTask}
+          task={explainTask.task}
+          initialTab={explainTask.tab}
           open={!!explainTask}
           onClose={() => setExplainTask(null)}
         />
@@ -374,11 +376,13 @@ function TaskRow({
   status,
   isBlocked,
   onStatus,
+  onExplain,
 }: {
   task: RelocationTask;
   status: TaskStatus;
   isBlocked: boolean;
   onStatus: (s: TaskStatus) => void;
+  onExplain: (tab: "explain" | "template") => void;
 }) {
   const done = status === "done";
   const [expanded, setExpanded] = useState(false);
@@ -461,6 +465,7 @@ function TaskRow({
             </button>
             {task.template && (
               <button
+                onClick={() => onExplain("template")}
                 className="text-xs font-medium px-3 py-1.5 bg-surface ring-1 ring-border rounded-md hover:bg-muted"
               >
                 Open template

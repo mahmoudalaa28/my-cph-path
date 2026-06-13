@@ -9,8 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SoftLandingRouteImport } from './routes/soft-landing'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as EmployerRouteImport } from './routes/employer'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ChecklistRouteImport } from './routes/checklist'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SoftLandingRoute = SoftLandingRouteImport.update({
+  id: '/soft-landing',
+  path: '/soft-landing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployerRoute = EmployerRouteImport.update({
+  id: '/employer',
+  path: '/employer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChecklistRoute = ChecklistRouteImport.update({
+  id: '/checklist',
+  path: '/checklist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +55,116 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/checklist': typeof ChecklistRoute
+  '/dashboard': typeof DashboardRoute
+  '/employer': typeof EmployerRoute
+  '/onboarding': typeof OnboardingRoute
+  '/soft-landing': typeof SoftLandingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/checklist': typeof ChecklistRoute
+  '/dashboard': typeof DashboardRoute
+  '/employer': typeof EmployerRoute
+  '/onboarding': typeof OnboardingRoute
+  '/soft-landing': typeof SoftLandingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/checklist': typeof ChecklistRoute
+  '/dashboard': typeof DashboardRoute
+  '/employer': typeof EmployerRoute
+  '/onboarding': typeof OnboardingRoute
+  '/soft-landing': typeof SoftLandingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/checklist'
+    | '/dashboard'
+    | '/employer'
+    | '/onboarding'
+    | '/soft-landing'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/checklist'
+    | '/dashboard'
+    | '/employer'
+    | '/onboarding'
+    | '/soft-landing'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/checklist'
+    | '/dashboard'
+    | '/employer'
+    | '/onboarding'
+    | '/soft-landing'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  ChecklistRoute: typeof ChecklistRoute
+  DashboardRoute: typeof DashboardRoute
+  EmployerRoute: typeof EmployerRoute
+  OnboardingRoute: typeof OnboardingRoute
+  SoftLandingRoute: typeof SoftLandingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/soft-landing': {
+      id: '/soft-landing'
+      path: '/soft-landing'
+      fullPath: '/soft-landing'
+      preLoaderRoute: typeof SoftLandingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employer': {
+      id: '/employer'
+      path: '/employer'
+      fullPath: '/employer'
+      preLoaderRoute: typeof EmployerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checklist': {
+      id: '/checklist'
+      path: '/checklist'
+      fullPath: '/checklist'
+      preLoaderRoute: typeof ChecklistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +177,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  ChecklistRoute: ChecklistRoute,
+  DashboardRoute: DashboardRoute,
+  EmployerRoute: EmployerRoute,
+  OnboardingRoute: OnboardingRoute,
+  SoftLandingRoute: SoftLandingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

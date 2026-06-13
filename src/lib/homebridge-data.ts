@@ -779,3 +779,160 @@ export const DEMO_USER: {
   partnerEmployed: false,
   children: ["4-6", "7-10"],
 };
+
+// ---------------- Document checklist ----------------
+
+export type DocAudience =
+  | "everyone"
+  | "individual"
+  | "couple"
+  | "family"
+  | "eu"
+  | "non-eu"
+  | "worker"
+  | "student";
+
+export type DocStatus = "missing" | "ready" | "uploaded" | "n/a";
+
+export interface RelocationDocument {
+  id: string;
+  name: string;
+  why: string;
+  supportsTaskIds: string[];
+  audience: DocAudience[];
+  status: DocStatus;
+}
+
+export const DOCUMENTS: RelocationDocument[] = [
+  {
+    id: "passport",
+    name: "Valid passport (or EU national ID)",
+    why: "Primary ID for border control, Borgerservice, banks and SIRI. Must be valid 6+ months past entry.",
+    supportsTaskIds: ["register-address", "cpr-application", "siri-permit", "eu-registration", "bank-account"],
+    audience: ["everyone"],
+    status: "uploaded",
+  },
+  {
+    id: "passport-photos",
+    name: "2–4 biometric passport photos (35×45 mm)",
+    why: "Required by SIRI for permit cards and by some Borgerservice offices for MitID activation.",
+    supportsTaskIds: ["siri-permit", "mitid-setup"],
+    audience: ["everyone"],
+    status: "missing",
+  },
+  {
+    id: "employment-contract",
+    name: "Signed employment contract",
+    why: "Proof of income for CPR, SIRI, banks and SKAT. Banks won't open NemKonto without it.",
+    supportsTaskIds: ["cpr-application", "siri-permit", "bank-account", "skat-contact", "tax-card"],
+    audience: ["worker"],
+    status: "uploaded",
+  },
+  {
+    id: "enrollment-letter",
+    name: "University enrollment letter",
+    why: "Replaces the employment contract for students applying for CPR and residence registration.",
+    supportsTaskIds: ["cpr-application", "register-address", "siri-permit"],
+    audience: ["student"],
+    status: "n/a",
+  },
+  {
+    id: "lease",
+    name: "Signed lease / host confirmation letter",
+    why: "Proves a registrable Copenhagen address — the gateway to CPR.",
+    supportsTaskIds: ["temp-housing", "register-address", "cpr-application", "bank-account"],
+    audience: ["everyone"],
+    status: "ready",
+  },
+  {
+    id: "marriage-cert",
+    name: "Marriage certificate (apostilled)",
+    why: "Required to register a spouse and access family-reunification residence rights.",
+    supportsTaskIds: ["register-address", "cpr-application", "siri-permit"],
+    audience: ["couple", "family"],
+    status: "missing",
+  },
+  {
+    id: "birth-certs",
+    name: "Children's birth certificates (apostilled)",
+    why: "Required to register children at Borgerservice and to enroll them in school or daycare.",
+    supportsTaskIds: ["cpr-application", "school-registration", "daycare-waitlist"],
+    audience: ["family"],
+    status: "missing",
+  },
+  {
+    id: "prev-insurance",
+    name: "Previous health insurance / coverage proof",
+    why: "Bridges the 2–3 week gap before your yellow card arrives.",
+    supportsTaskIds: ["register-address"],
+    audience: ["everyone"],
+    status: "ready",
+  },
+  {
+    id: "work-permit-confirmation",
+    name: "Work permit application confirmation",
+    why: "Non-EU nationals need this if SIRI was filed before travel — speeds up Borgerservice.",
+    supportsTaskIds: ["siri-permit", "cpr-application"],
+    audience: ["non-eu", "worker"],
+    status: "missing",
+  },
+  {
+    id: "employer-cvr",
+    name: "Employer's CVR number",
+    why: "Mandatory field on every SIRI residence-permit application.",
+    supportsTaskIds: ["siri-permit"],
+    audience: ["non-eu", "worker"],
+    status: "ready",
+  },
+  {
+    id: "siri-fee-receipt",
+    name: "SIRI application fee receipt",
+    why: "SIRI will not start processing without proof of payment (DKK 3,545+).",
+    supportsTaskIds: ["siri-permit"],
+    audience: ["non-eu"],
+    status: "missing",
+  },
+  {
+    id: "eu-residence-cert",
+    name: "EU residence proof (employment or self-sufficiency)",
+    why: "EU nationals registering as residents must show employment, study or means.",
+    supportsTaskIds: ["eu-registration"],
+    audience: ["eu"],
+    status: "n/a",
+  },
+  {
+    id: "bank-iban",
+    name: "Bank account number (IBAN)",
+    why: "Needed to link NemKonto and to set up tax refunds with SKAT.",
+    supportsTaskIds: ["nemkonto-activate", "tax-card"],
+    audience: ["everyone"],
+    status: "missing",
+  },
+  {
+    id: "school-records",
+    name: "Previous school report / transcripts",
+    why: "Folkeskole and international schools use these for grade placement.",
+    supportsTaskIds: ["school-registration"],
+    audience: ["family"],
+    status: "ready",
+  },
+  {
+    id: "vaccination-record",
+    name: "Children's vaccination record",
+    why: "Recommended for school enrollment and your child's first GP visit.",
+    supportsTaskIds: ["school-registration", "gp-register"],
+    audience: ["family"],
+    status: "ready",
+  },
+];
+
+export const DOC_AUDIENCE_LABELS: Record<DocAudience, string> = {
+  everyone: "Everyone",
+  individual: "Individual",
+  couple: "Couple",
+  family: "Family",
+  eu: "EU citizen",
+  "non-eu": "Non-EU citizen",
+  worker: "Worker",
+  student: "Student",
+};

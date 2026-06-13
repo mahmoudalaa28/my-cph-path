@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteNav, SiteFooter } from "@/components/site-nav";
 import { TASKS, STAGES, DEMO_USER, FIRST_WEEK_MISSIONS, DOCUMENTS, DOC_AUDIENCE_LABELS, SOFT_LANDING } from "@/lib/homebridge-data";
 import type { RelocationTask, TaskStatus, RelocationDocument, DocStatus, DocAudience } from "@/lib/homebridge-data";
@@ -16,12 +16,12 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
-  const profile = useMemo(() => {
+  const [profile, setProfile] = useState(DEMO_USER);
+  useEffect(() => {
     try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem("homebridge.profile") : null;
-      if (raw) return { ...DEMO_USER, ...JSON.parse(raw) };
+      const raw = localStorage.getItem("homebridge.profile");
+      if (raw) setProfile({ ...DEMO_USER, ...JSON.parse(raw) });
     } catch {}
-    return DEMO_USER;
   }, []);
 
   const [statuses, setStatuses] = useState<Record<string, TaskStatus>>(

@@ -365,110 +365,163 @@ function TaskRow({
   status,
   isBlocked,
   onStatus,
-  onExplain,
 }: {
   task: RelocationTask;
   status: TaskStatus;
   isBlocked: boolean;
   onStatus: (s: TaskStatus) => void;
-  onExplain: () => void;
 }) {
   const done = status === "done";
+  const [expanded, setExpanded] = useState(false);
   return (
     <li
-      className={`p-5 flex gap-5 items-start border-b border-border last:border-0 transition-colors ${
+      className={`border-b border-border last:border-0 transition-colors ${
         done ? "opacity-60" : "hover:bg-stone-50/60"
       }`}
     >
-      <button
-        onClick={() => onStatus(done ? "not-started" : "done")}
-        className={`mt-1 size-5 shrink-0 rounded grid place-items-center transition-colors ${
-          done
-            ? "bg-ink text-canvas"
-            : "border border-stone-300 hover:border-ink"
-        }`}
-        aria-label={done ? "Mark not done" : "Mark done"}
-      >
-        {done && <span className="text-[10px] font-bold">✓</span>}
-      </button>
+      <div className="p-5 flex gap-5 items-start">
+        <button
+          onClick={() => onStatus(done ? "not-started" : "done")}
+          className={`mt-1 size-5 shrink-0 rounded grid place-items-center transition-colors ${
+            done
+              ? "bg-ink text-canvas"
+              : "border border-stone-300 hover:border-ink"
+          }`}
+          aria-label={done ? "Mark not done" : "Mark done"}
+        >
+          {done && <span className="text-[10px] font-bold">✓</span>}
+        </button>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center flex-wrap gap-2 mb-1">
-          <h4 className={`font-medium ${done ? "line-through" : ""}`}>{task.title}</h4>
-          <PriorityPill p={task.priority} />
-          {isBlocked && (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-muted-foreground ring-1 ring-border">
-              Blocked
-            </span>
-          )}
-          {status === "in-progress" && (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-soft text-accent ring-1 ring-accent/20">
-              In progress
-            </span>
-          )}
-        </div>
-        <p className="text-sm text-muted-foreground max-w-[58ch]">{task.description}</p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center flex-wrap gap-2 mb-1">
+            <h4 className={`font-medium ${done ? "line-through" : ""}`}>{task.title}</h4>
+            <PriorityPill p={task.priority} />
+            {isBlocked && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-muted-foreground ring-1 ring-border">
+                Blocked
+              </span>
+            )}
+            {status === "in-progress" && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-soft text-accent ring-1 ring-accent/20">
+                In progress
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground max-w-[58ch]">{task.description}</p>
 
-        <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-          {task.appliesTo.map((a) => (
-            <span
-              key={a}
-              className="px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 ring-1 ring-border capitalize"
-            >
-              {a.replace("-", " ")}
-            </span>
-          ))}
-        </div>
-
-        {task.commonMistake && (
-          <p className="mt-3 text-xs text-amber-800 bg-amber-50 ring-1 ring-amber-200/60 rounded-md px-3 py-2 max-w-[60ch]">
-            <span className="font-semibold">Common mistake — </span>
-            {task.commonMistake}
-          </p>
-        )}
-
-        {task.documents.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {task.documents.map((d) => (
+          <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+            {task.appliesTo.map((a) => (
               <span
-                key={d}
-                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"
+                key={a}
+                className="px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 ring-1 ring-border capitalize"
               >
-                <span className="size-4 grid place-items-center rounded bg-stone-100 text-[8px] font-bold">
-                  DOC
-                </span>
-                {d}
+                {a.replace("-", " ")}
               </span>
             ))}
           </div>
-        )}
 
-        <div className="flex flex-wrap gap-2 mt-4">
-          <button
-            onClick={onExplain}
-            className="text-xs font-medium px-3 py-1.5 bg-ink text-canvas rounded-md hover:bg-ink/90"
-          >
-            Explain this step simply
-          </button>
-          {task.template && (
-            <button
-              onClick={onExplain}
-              className="text-xs font-medium px-3 py-1.5 bg-surface ring-1 ring-border rounded-md hover:bg-muted"
-            >
-              Open template
-            </button>
+          {task.commonMistake && (
+            <p className="mt-3 text-xs text-amber-800 bg-amber-50 ring-1 ring-amber-200/60 rounded-md px-3 py-2 max-w-[60ch]">
+              <span className="font-semibold">Common mistake — </span>
+              {task.commonMistake}
+            </p>
           )}
-          <a
-            href={task.officialLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium px-3 py-1.5 text-muted-foreground hover:text-ink"
-          >
-            Official link ↗
-          </a>
+
+          {task.documents.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {task.documents.map((d) => (
+                <span
+                  key={d}
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"
+                >
+                  <span className="size-4 grid place-items-center rounded bg-stone-100 text-[8px] font-bold">
+                    DOC
+                  </span>
+                  {d}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2 mt-4">
+            <button
+              onClick={() => setExpanded((e) => !e)}
+              className="text-xs font-medium px-3 py-1.5 bg-ink text-canvas rounded-md hover:bg-ink/90"
+            >
+              {expanded ? "Hide explanation" : "Explain this step simply"}
+            </button>
+            {task.template && (
+              <button
+                className="text-xs font-medium px-3 py-1.5 bg-surface ring-1 ring-border rounded-md hover:bg-muted"
+              >
+                Open template
+              </button>
+            )}
+            <a
+              href={task.officialLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium px-3 py-1.5 text-muted-foreground hover:text-ink"
+            >
+              Official link ↗
+            </a>
+          </div>
         </div>
       </div>
+
+      {expanded && (
+        <div className="px-5 pb-5">
+          <div className="rounded-xl ring-1 ring-border bg-stone-50/80 p-5 space-y-4">
+            <ExplainerItem
+              label="What this step means"
+              text={task.explainer.what}
+            />
+            <ExplainerItem
+              label="Why it matters"
+              text={task.explainer.why}
+            />
+            <ExplainerItem
+              label="Documents you'll need"
+              text={task.explainer.docs}
+            />
+            <ExplainerItem
+              label="What can go wrong"
+              text={task.explainer.risks}
+              tone="warn"
+            />
+            <ExplainerItem
+              label="What to do next"
+              text={task.explainer.next}
+              tone="action"
+            />
+          </div>
+        </div>
+      )}
     </li>
+  );
+}
+
+function ExplainerItem({
+  label,
+  text,
+  tone = "neutral",
+}: {
+  label: string;
+  text: string;
+  tone?: "neutral" | "warn" | "action";
+}) {
+  const toneClasses = {
+    neutral: "text-ink",
+    warn: "text-amber-800",
+    action: "text-accent font-medium",
+  };
+  return (
+    <div>
+      <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-1">
+        {label}
+      </p>
+      <p className={`text-sm leading-relaxed ${toneClasses[tone]}`}>{text}</p>
+    </div>
   );
 }
 

@@ -2,27 +2,39 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteNav, SiteFooter } from "@/components/site-nav";
 import { SOFT_LANDING, FIRST_WEEK_MISSIONS } from "@/lib/homebridge-data";
-import hostImage from "@/assets/host-families.jpg";
-import canalImage from "@/assets/canal-tours.jpg";
-import coworkImage from "@/assets/coworking.jpg";
 
-export const Route = createFileRoute("/soft-landing")({
-  head: () => ({
-    meta: [
-      { title: "Soft landing — HomeBridge" },
-      { name: "description", content: "Curated events, host families, language exchanges and meetups to help you feel at home in Copenhagen." },
-    ],
-  }),
-  component: SoftLandingPage,
-});
+const CATEGORY_COLORS: Record<string, string> = {
+  events: "bg-blue-50",
+  meetups: "bg-teal-50",
+  coworking: "bg-stone-100",
+  networking: "bg-indigo-50",
+  sports: "bg-green-50",
+  cafes: "bg-amber-50",
+  host: "bg-rose-50",
+  match: "bg-emerald-50",
+  guide: "bg-slate-50",
+};
+
+function getCategoryEmoji(category: string) {
+  const map: Record<string, string> = {
+    events: "🎉",
+    meetups: "🤝",
+    coworking: "💻",
+    networking: "🔗",
+    sports: "⚽",
+    cafes: "☕",
+    host: "🏠",
+    match: "💚",
+    guide: "📘",
+  };
+  return map[category] ?? "✨";
+}
 
 const AUDIENCES = [
   { id: "individual", label: "Individuals" },
   { id: "couple", label: "Couples" },
   { id: "family", label: "Families" },
 ] as const;
-
-const IMAGE_POOL = [hostImage, canalImage, coworkImage];
 
 function SoftLandingPage() {
   const [aud, setAud] = useState<"individual" | "couple" | "family">("individual");
@@ -65,15 +77,12 @@ function SoftLandingPage() {
                 key={it.id}
                 className="bg-surface rounded-2xl ring-1 ring-border overflow-hidden shadow-sm flex flex-col"
               >
-                <div className="aspect-[4/3] overflow-hidden bg-muted">
-                  <img
-                    src={IMAGE_POOL[i % IMAGE_POOL.length]}
-                    alt={it.title}
-                    loading="lazy"
-                    width={800}
-                    height={600}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                  />
+                <div
+                  className={`aspect-[4/3] overflow-hidden ${CATEGORY_COLORS[it.category] ?? "bg-muted"} grid place-items-center`}
+                >
+                  <span className="text-4xl" aria-hidden="true">
+                    {getCategoryEmoji(it.category)}
+                  </span>
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
                   <div className="flex items-center justify-between gap-2">

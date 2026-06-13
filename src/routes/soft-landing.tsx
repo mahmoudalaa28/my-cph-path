@@ -30,6 +30,12 @@ function getCategoryEmoji(category: string) {
   return map[category] ?? "✨";
 }
 
+const AUDIENCES = [
+  { id: "individual", label: "Individuals" },
+  { id: "couple", label: "Couples" },
+  { id: "family", label: "Families" },
+] as const;
+
 function SoftLandingPage() {
   const [aud, setAud] = useState<"individual" | "couple" | "family">("individual");
 

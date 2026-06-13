@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { SiteNav, SiteFooter } from "@/components/site-nav";
-import { TASKS, STAGES, DEMO_USER, FIRST_WEEK_MISSIONS, DOCUMENTS, DOC_AUDIENCE_LABELS } from "@/lib/homebridge-data";
+import { TASKS, STAGES, DEMO_USER, FIRST_WEEK_MISSIONS, DOCUMENTS, DOC_AUDIENCE_LABELS, SOFT_LANDING } from "@/lib/homebridge-data";
 import type { RelocationTask, TaskStatus, RelocationDocument, DocStatus, DocAudience } from "@/lib/homebridge-data";
 import { ExplainerDialog } from "@/components/task-explainer";
 
@@ -332,6 +332,8 @@ function DashboardPage() {
               </div>
             </section>
           </div>
+
+          <FeelAtHomeSection type={DEMO_USER.type} />
         </div>
       </main>
 
@@ -632,5 +634,168 @@ function DocumentRow({
         </div>
       </div>
     </li>
+  );
+}
+
+// ---------------- Feel at home faster (secondary) ----------------
+
+const CATEGORY_HEADINGS: Record<string, string> = {
+  events: "Curated events",
+  meetups: "Meetups",
+  coworking: "Coworking & coffee",
+  networking: "Professional networking",
+  sports: "Sports & social clubs",
+  cafes: "Solo-friendly places",
+  host: "Local host families",
+  match: "Intro suggestions",
+  guide: "Local guides",
+};
+
+function FeelAtHomeSection({ type }: { type: "individual" | "couple" | "family" }) {
+  const items = SOFT_LANDING.filter((s) => s.audience === type || s.audience === "all");
+
+  // For couples/families, surface intro matches as a separate highlighted strip.
+  const intros = items.filter((i) => i.category === "match");
+  const rest = items.filter((i) => i.category !== "match");
+
+  const introHeading =
+    type === "couple"
+      ? "Couple-to-couple intros"
+      : type === "family"
+      ? "Family-to-family intros"
+      : null;
+
+  const missions =
+    type === "individual"
+      ? FIRST_WEEK_MISSIONS.slice(0, 6)
+      : type === "couple"
+      ? [
+          "Bike together along the harbour from Nyhavn to Refshaleøen",
+          "Try a 'hygge' Friday dinner at a local wine bar",
+          "Visit Louisiana on a Sunday afternoon",
+          "Join a couples' run with NBRO (free, every Tuesday)",
+        ]
+      : [
+          "Saturday morning at a local playground in your district",
+          "Library story-time in English (most kommune libraries host one)",
+          "Picnic at Frederiksberg Have with other newcomer families",
+          "Sunday open-house at a folkeskole in your area",
+        ];
+
+  return (
+    <section className="mt-16">
+      <div className="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+            Secondary · Soft landing
+          </span>
+          <h2 className="mt-2 font-serif text-2xl md:text-3xl font-medium leading-tight">
+            Feel at home faster
+          </h2>
+          <p className="mt-2 text-muted-foreground max-w-2xl text-sm">
+            Optional, low-pressure ways to start belonging. Your bureaucracy roadmap above
+            stays the priority — this is here when you have a quiet hour.
+          </p>
+        </div>
+        <Link
+          to="/soft-landing"
+          className="text-sm font-medium text-accent hover:text-accent/80"
+        >
+          See all soft-landing support →
+        </Link>
+      </div>
+
+      {introHeading && intros.length > 0 && (
+        <div className="mt-8 rounded-2xl ring-1 ring-border bg-accent-soft/40 p-6">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h3 className="font-serif text-lg font-medium">{introHeading}</h3>
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent">
+              Optional
+            </span>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {intros.map((it) => (
+              <article
+                key={it.id}
+                className="bg-surface rounded-xl ring-1 ring-border p-5 flex flex-col"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent">
+                    {CATEGORY_HEADINGS[it.category] ?? it.category}
+                  </span>
+                  {it.matchScore && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/50">
+                      {it.matchScore}% match
+                    </span>
+                  )}
+                </div>
+                <h4 className="mt-2 font-serif text-base font-semibold leading-snug">
+                  {it.title}
+                </h4>
+                <p className="mt-1 text-sm text-muted-foreground flex-1">{it.subtitle}</p>
+                <button className="mt-4 self-start bg-ink text-canvas text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-ink/90">
+                  Request intro
+                </button>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {rest.map((it) => (
+          <article
+            key={it.id}
+            className="bg-surface rounded-2xl ring-1 ring-border p-5 flex flex-col shadow-sm"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent">
+              {CATEGORY_HEADINGS[it.category] ?? it.category}
+            </span>
+            <h3 className="mt-2 font-serif text-base font-semibold leading-snug">
+              {it.title}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground flex-1">{it.subtitle}</p>
+            {(it.date || it.attendees) && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                {it.date}
+                {it.date && it.attendees ? " · " : ""}
+                {it.attendees ? `${it.attendees} going` : ""}
+              </p>
+            )}
+          </article>
+        ))}
+      </div>
+
+      <div className="mt-8 rounded-2xl ring-1 ring-border bg-stone-50 p-6 md:p-8">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+              First-week missions
+            </span>
+            <h3 className="mt-2 font-serif text-xl font-medium">
+              {type === "family"
+                ? "Tiny family rituals to settle in"
+                : type === "couple"
+                ? "Small moments, together"
+                : "Low-pressure social missions"}
+            </h3>
+          </div>
+          <span className="text-xs text-muted-foreground">Pick one a day · no pressure</span>
+        </div>
+        <ul className="mt-5 grid sm:grid-cols-2 gap-3">
+          {missions.map((m, i) => (
+            <li
+              key={i}
+              className="flex items-start gap-3 p-4 bg-surface rounded-xl ring-1 ring-border"
+            >
+              <span className="size-6 grid place-items-center rounded-md bg-accent-soft text-accent text-xs font-bold">
+                {i + 1}
+              </span>
+              <span className="text-sm">{m}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }

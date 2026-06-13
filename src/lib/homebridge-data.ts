@@ -735,16 +735,33 @@ export const EMPLOYER_STATS = {
   avgCompletion: 67,
   softLandingUsers: 89,
   riskFlags: 4,
+  lowProgressUsers: 11, // < 25% complete after 7 days
   topStressors: [
     { label: "Finding English-speaking daycare", count: 38 },
     { label: "CPR appointment wait times", count: 31 },
     { label: "Opening a bank account", count: 22 },
     { label: "Understanding tax cards", count: 18 },
+    { label: "Loneliness in first month", count: 15 },
   ],
   blockedSteps: [
     { label: "MitID activation", percent: 34 },
     { label: "Bank account opening", percent: 28 },
     { label: "Daycare placement", percent: 21 },
+    { label: "SIRI residence card pickup", percent: 17 },
+    { label: "Tax card (skattekort)", percent: 12 },
+  ],
+  missingDocuments: [
+    { label: "SIRI fee receipt", percent: 41 },
+    { label: "Landlord address confirmation", percent: 33 },
+    { label: "Marriage / birth certificates (apostilled)", percent: 27 },
+    { label: "Biometric passport photos", percent: 22 },
+    { label: "Bank IBAN for NemKonto", percent: 19 },
+  ],
+  progressDistribution: [
+    { bucket: "0–25%", count: 11 },
+    { bucket: "26–50%", count: 24 },
+    { bucket: "51–75%", count: 48 },
+    { bucket: "76–100%", count: 59 },
   ],
   riskUsers: [
     { id: "EMP-0042", name: "Anonymized #0042", progress: 12, arrival: "21 days ago" },

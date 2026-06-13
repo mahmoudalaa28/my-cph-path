@@ -29,37 +29,50 @@ function EmployerPage() {
             Anonymized insights only — never individual answers, never documents.
           </p>
 
-          {/* KPI cards */}
-          <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Kpi n={s.employees.toString()} l="Relocated employees" />
-            <Kpi n={`${s.avgCompletion}%`} l="Avg admin completion" accent />
-            <Kpi n={s.softLandingUsers.toString()} l="Using soft landing" />
-            <Kpi n={s.riskFlags.toString()} l="Risk flags" warn />
+          {/* Privacy banner */}
+          <div className="mt-6 rounded-xl ring-1 ring-border bg-accent-soft/40 px-4 py-3 text-xs text-ink/80 flex items-start gap-2">
+            <span className="font-bold text-accent">Privacy:</span>
+            <span>
+              You see operational and anonymized progress only. No names, no documents, no
+              answers to personal questions (origin, family status, stressors tied to a person).
+              Aggregates are hidden when fewer than 5 employees match.
+            </span>
           </div>
 
-          <div className="mt-8 grid lg:grid-cols-2 gap-6">
-            {/* Top stressors */}
-            <Panel title="Top stressors">
-              <ul className="space-y-4">
-                {s.topStressors.map((row) => {
-                  const max = s.topStressors[0].count;
-                  const pct = Math.round((row.count / max) * 100);
-                  return (
-                    <li key={row.label}>
-                      <div className="flex items-center justify-between text-sm mb-1.5">
-                        <span>{row.label}</span>
-                        <span className="text-muted-foreground">{row.count}</span>
-                      </div>
-                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-accent" style={{ width: `${pct}%` }} />
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </Panel>
+          {/* KPI cards */}
+          <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Kpi n={s.employees.toString()} l="Total relocating users" />
+            <Kpi n={`${s.avgCompletion}%`} l="Avg relocation progress" accent />
+            <Kpi n={s.lowProgressUsers.toString()} l="Users with low progress" warn />
+            <Kpi n={s.softLandingUsers.toString()} l="Using soft-landing support" />
+          </div>
 
-            <Panel title="Most common blocked steps">
+          {/* Progress distribution */}
+          <Panel className="mt-6" title="Relocation progress distribution">
+            <div className="grid grid-cols-4 gap-3">
+              {s.progressDistribution.map((b) => {
+                const max = Math.max(...s.progressDistribution.map((x) => x.count));
+                const pct = Math.round((b.count / max) * 100);
+                return (
+                  <div key={b.bucket} className="rounded-xl ring-1 ring-border p-4 bg-canvas">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                      {b.bucket}
+                    </div>
+                    <div className="mt-2 font-serif text-2xl">{b.count}</div>
+                    <div className="mt-3 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${b.bucket === "0–25%" ? "bg-amber-500" : "bg-accent"}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Panel>
+
+          <div className="mt-6 grid lg:grid-cols-2 gap-6">
+            <Panel title="Most common blocked bureaucracy steps">
               <ul className="space-y-4">
                 {s.blockedSteps.map((row) => (
                   <li key={row.label}>
@@ -74,10 +87,72 @@ function EmployerPage() {
                 ))}
               </ul>
             </Panel>
+
+            <Panel title="Most commonly missing documents">
+              <ul className="space-y-4">
+                {s.missingDocuments.map((row) => (
+                  <li key={row.label}>
+                    <div className="flex items-center justify-between text-sm mb-1.5">
+                      <span>{row.label}</span>
+                      <span className="text-muted-foreground">{row.percent}% of users</span>
+                    </div>
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full bg-amber-500" style={{ width: `${row.percent}%` }} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
           </div>
 
-          {/* Risk users */}
-          <Panel className="mt-6" title="Risk flags · Low progress, > 7 days since arrival">
+          <div className="mt-6 grid lg:grid-cols-2 gap-6">
+            <Panel title="Top relocation stressors (aggregated)">
+              <ul className="space-y-4">
+                {s.topStressors.map((row) => {
+                  const max = s.topStressors[0].count;
+                  const pct = Math.round((row.count / max) * 100);
+                  return (
+                    <li key={row.label}>
+                      <div className="flex items-center justify-between text-sm mb-1.5">
+                        <span>{row.label}</span>
+                        <span className="text-muted-foreground">{row.count} mentions</span>
+                      </div>
+                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-accent" style={{ width: `${pct}%` }} />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Panel>
+
+            <Panel title="Soft-landing engagement">
+              <p className="text-sm text-muted-foreground">
+                {Math.round((s.softLandingUsers / s.employees) * 100)}% of your relocating users
+                have opened at least one soft-landing resource (host families, meetups, intros,
+                first-week missions).
+              </p>
+              <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-accent"
+                  style={{ width: `${Math.round((s.softLandingUsers / s.employees) * 100)}%` }}
+                />
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-xl ring-1 ring-border p-3 bg-canvas">
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Engaged</div>
+                  <div className="mt-1 font-serif text-xl">{s.softLandingUsers}</div>
+                </div>
+                <div className="rounded-xl ring-1 ring-border p-3 bg-canvas">
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Not yet</div>
+                  <div className="mt-1 font-serif text-xl">{s.employees - s.softLandingUsers}</div>
+                </div>
+              </div>
+            </Panel>
+          </div>
+
+          {/* Risk users — anonymized */}
+          <Panel className="mt-6" title="Risk flags · low progress, > 7 days since arrival (anonymized)">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -111,6 +186,10 @@ function EmployerPage() {
                 </tbody>
               </table>
             </div>
+            <p className="mt-4 text-[11px] text-muted-foreground">
+              Identifiers are pseudonymous. To reach a user, send a support nudge through
+              HomeBridge — we never expose names, emails, origins, family status, or documents.
+            </p>
           </Panel>
 
           <div className="mt-12 rounded-2xl bg-ink text-canvas p-8 md:p-10 flex flex-col md:flex-row md:items-center gap-6 justify-between">

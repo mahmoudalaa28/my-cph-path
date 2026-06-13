@@ -48,6 +48,34 @@ const USER_PROGRESS = [
 ];
 
 function AdminPage() {
+  const [authed, setAuthed] = useState(false);
+  const [pw, setPw] = useState("");
+  const ADMIN_PW = "homebridge2025";
+
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-canvas font-sans text-ink flex items-center justify-center px-6">
+        <div className="w-full max-w-sm">
+          <h1 className="font-serif text-2xl font-medium mb-6">Admin access</h1>
+          <input
+            type="password"
+            value={pw}
+            onChange={(e) => setPw(e.target.value)}
+            placeholder="Password"
+            className="w-full px-4 py-3 rounded-lg ring-1 ring-border mb-4"
+            onKeyDown={(e) => e.key === "Enter" && pw === ADMIN_PW && setAuthed(true)}
+          />
+          <button
+            onClick={() => pw === ADMIN_PW && setAuthed(true)}
+            className="w-full bg-ink text-canvas px-4 py-3 rounded-lg font-medium"
+          >
+            Log in
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const [tab, setTab] = useState<(typeof TABS)[number]>("Tasks");
 
   return (

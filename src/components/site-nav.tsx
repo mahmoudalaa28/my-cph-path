@@ -24,9 +24,6 @@ export function SiteNav() {
             <Link to="/employer" className="hover:text-ink transition-colors" activeProps={{ className: "text-ink" }}>
               Employer
             </Link>
-            <Link to="/admin" className="hover:text-ink transition-colors" activeProps={{ className: "text-ink" }}>
-              Admin
-            </Link>
           </div>
         </div>
         <div className="flex items-center gap-3">

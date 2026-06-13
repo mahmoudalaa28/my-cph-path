@@ -546,12 +546,25 @@ export const EMPLOYER_STATS = {
   ],
 };
 
-export const DEMO_USER = {
+export type RelocType = "individual" | "couple" | "family";
+
+export const DEMO_USER: {
+  name: string;
+  email: string;
+  type: RelocType;
+  origin: string;
+  euStatus: "eu" | "non-eu";
+  arrivalDate: string;
+  reason: string;
+  destination: string;
+  partnerEmployed: boolean;
+  children: string[];
+} = {
   name: "Maya Okafor",
   email: "maya@example.com",
-  type: "family" as const,
+  type: "family",
   origin: "Nigeria",
-  euStatus: "non-eu" as const,
+  euStatus: "non-eu",
   arrivalDate: "2025-09-15",
   reason: "work",
   destination: "Copenhagen",

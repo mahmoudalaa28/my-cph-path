@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { SiteNav, SiteFooter } from "@/components/site-nav";
-import { TASKS, STAGES, DEMO_USER, FIRST_WEEK_MISSIONS } from "@/lib/homebridge-data";
-import type { RelocationTask, TaskStatus } from "@/lib/homebridge-data";
+import { TASKS, STAGES, DEMO_USER, FIRST_WEEK_MISSIONS, DOCUMENTS, DOC_AUDIENCE_LABELS } from "@/lib/homebridge-data";
+import type { RelocationTask, TaskStatus, RelocationDocument, DocStatus, DocAudience } from "@/lib/homebridge-data";
 import { ExplainerDialog } from "@/components/task-explainer";
 
 export const Route = createFileRoute("/dashboard")({
@@ -19,6 +19,9 @@ function DashboardPage() {
   const [statuses, setStatuses] = useState<Record<string, TaskStatus>>(
     Object.fromEntries(TASKS.map((t) => [t.id, t.status]))
   );
+  const [docStatuses, setDocStatuses] = useState<Record<string, DocStatus>>(
+    Object.fromEntries(DOCUMENTS.map((d) => [d.id, d.status]))
+  );
   const [explainTask, setExplainTask] = useState<RelocationTask | null>(null);
 
   const visible = useMemo(
@@ -31,6 +34,22 @@ function DashboardPage() {
     []
   );
 
+  const visibleDocs = useMemo(() => {
+    const type = DEMO_USER.type;
+    const eu = DEMO_USER.euStatus;
+    return DOCUMENTS.filter((d) =>
+      d.audience.some(
+        (a) =>
+          a === "everyone" ||
+          a === type ||
+          (a === "eu" && eu === "eu") ||
+          (a === "non-eu" && eu === "non-eu") ||
+          a === "worker" || // demo user is a worker
+          (a === "student" && DEMO_USER.reason === "student")
+      )
+    );
+  }, []);
+
   const done = visible.filter((t) => statuses[t.id] === "done").length;
   const pct = Math.round((done / visible.length) * 100);
 
@@ -42,15 +61,38 @@ function DashboardPage() {
     (t) => t.blockedBy && statuses[t.blockedBy] !== "done" && statuses[t.id] !== "done"
   );
 
+  // High-priority tasks blocked by missing documents
+  const docBlocked = useMemo(() => {
+    return visible
+      .filter((t) => t.priority === "high" && statuses[t.id] !== "done")
+      .map((t) => {
+        const missing = visibleDocs.filter(
+          (d) =>
+            d.supportsTaskIds.includes(t.id) &&
+            (docStatuses[d.id] === "missing" || !docStatuses[d.id])
+        );
+        return { task: t, missing };
+      })
+      .filter((x) => x.missing.length > 0);
+  }, [visible, visibleDocs, statuses, docStatuses]);
+
   const upcoming = visible
     .filter((t) => statuses[t.id] !== "done")
     .sort((a, b) => a.daysFromArrival - b.daysFromArrival)
     .slice(0, 5);
 
-  const allDocs = Array.from(new Set(visible.flatMap((t) => t.documents))).slice(0, 12);
+  const docCounts = useMemo(() => {
+    const c = { missing: 0, ready: 0, uploaded: 0, "n/a": 0 } as Record<DocStatus, number>;
+    visibleDocs.forEach((d) => {
+      c[docStatuses[d.id] ?? "missing"]++;
+    });
+    return c;
+  }, [visibleDocs, docStatuses]);
 
   const setStatus = (id: string, s: TaskStatus) =>
     setStatuses((prev) => ({ ...prev, [id]: s }));
+  const setDocStatus = (id: string, s: DocStatus) =>
+    setDocStatuses((prev) => ({ ...prev, [id]: s }));
 
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink">
@@ -115,17 +157,19 @@ function DashboardPage() {
                 </ul>
               </Card>
 
-              <Card title="Documents you'll need">
-                <div className="flex flex-wrap gap-1.5">
-                  {allDocs.map((d) => (
-                    <span
-                      key={d}
-                      className="text-xs px-2 py-1 bg-stone-50 ring-1 ring-border rounded-md"
-                    >
-                      {d}
-                    </span>
-                  ))}
+              <Card title="Documents at a glance">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <DocStat label="Missing" value={docCounts.missing} tone="warn" />
+                  <DocStat label="Ready" value={docCounts.ready} tone="ok" />
+                  <DocStat label="Uploaded" value={docCounts.uploaded} tone="ok" />
+                  <DocStat label="Not applicable" value={docCounts["n/a"]} tone="mute" />
                 </div>
+                <a
+                  href="#documents-needed"
+                  className="mt-4 inline-flex text-xs font-semibold text-accent hover:underline"
+                >
+                  Manage documents →
+                </a>
               </Card>
 
               <Card title="Upcoming deadlines">
@@ -163,6 +207,36 @@ function DashboardPage() {
 
             {/* Right column - Stage list */}
             <section className="lg:col-span-8 space-y-6">
+              {docBlocked.length > 0 && (
+                <div className="rounded-2xl ring-1 ring-amber-300/60 bg-amber-50 p-5">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 size-6 grid place-items-center rounded-full bg-amber-200 text-amber-900 text-xs font-bold">
+                      !
+                    </span>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-amber-900">
+                        {docBlocked.length} high-priority{" "}
+                        {docBlocked.length === 1 ? "task is" : "tasks are"} blocked by missing documents
+                      </p>
+                      <ul className="mt-2 space-y-1.5 text-xs text-amber-900/90">
+                        {docBlocked.slice(0, 4).map(({ task, missing }) => (
+                          <li key={task.id}>
+                            <span className="font-medium">{task.title}</span> — needs{" "}
+                            {missing.map((m) => m.name).join(", ")}
+                          </li>
+                        ))}
+                      </ul>
+                      <a
+                        href="#documents-needed"
+                        className="mt-3 inline-flex text-xs font-semibold text-amber-900 underline underline-offset-2"
+                      >
+                        Resolve in Documents Needed →
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {STAGES.map((stage) => {
                 const stageTasks = visible.filter((t) => t.stage === stage.id);
                 if (stageTasks.length === 0) return null;
@@ -198,6 +272,39 @@ function DashboardPage() {
                   </div>
                 );
               })}
+
+              {/* Documents Needed */}
+              <div
+                id="documents-needed"
+                className="bg-surface rounded-2xl ring-1 ring-border shadow-sm overflow-hidden scroll-mt-20"
+              >
+                <div className="p-5 border-b border-border flex items-center justify-between">
+                  <div>
+                    <h2 className="font-medium">Documents needed</h2>
+                    <p className="text-xs text-muted-foreground">
+                      Track every document your tasks depend on.
+                    </p>
+                  </div>
+                  <span className="text-xs font-medium px-2 py-1 bg-muted text-muted-foreground rounded-md">
+                    {docCounts.uploaded + docCounts.ready}/{visibleDocs.length}
+                  </span>
+                </div>
+                <ul>
+                  {visibleDocs.map((d) => (
+                    <DocumentRow
+                      key={d.id}
+                      doc={d}
+                      status={docStatuses[d.id] ?? "missing"}
+                      onStatus={(s) => setDocStatus(d.id, s)}
+                      supportsTitles={d.supportsTaskIds
+                        .map((id) => TASKS.find((t) => t.id === id)?.title)
+                        .filter(Boolean) as string[]}
+                    />
+                  ))}
+                </ul>
+              </div>
+
+
 
               {/* First week missions (soft landing teaser) */}
               <div className="bg-stone-50 rounded-2xl ring-1 ring-border p-7">
@@ -377,5 +484,101 @@ function PriorityPill({ p }: { p: "high" | "medium" | "low" }) {
     >
       {p}
     </span>
+  );
+}
+
+function DocStat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone: "ok" | "warn" | "mute";
+}) {
+  const tones = {
+    ok: "bg-emerald-50 text-emerald-800 ring-emerald-200/60",
+    warn: "bg-amber-50 text-amber-800 ring-amber-200/60",
+    mute: "bg-stone-50 text-stone-600 ring-border",
+  };
+  return (
+    <div className={`rounded-lg px-3 py-2 ring-1 ${tones[tone]}`}>
+      <p className="font-serif text-xl leading-none">{value}</p>
+      <p className="text-[10px] uppercase tracking-wider mt-1 font-semibold">{label}</p>
+    </div>
+  );
+}
+
+function DocumentRow({
+  doc,
+  status,
+  onStatus,
+  supportsTitles,
+}: {
+  doc: RelocationDocument;
+  status: DocStatus;
+  onStatus: (s: DocStatus) => void;
+  supportsTitles: string[];
+}) {
+  const tone =
+    status === "missing"
+      ? "text-amber-700"
+      : status === "ready"
+      ? "text-emerald-700"
+      : status === "uploaded"
+      ? "text-emerald-800"
+      : "text-muted-foreground";
+  const opts: { v: DocStatus; l: string }[] = [
+    { v: "missing", l: "Missing" },
+    { v: "ready", l: "Ready" },
+    { v: "uploaded", l: "Uploaded" },
+    { v: "n/a", l: "N/A" },
+  ];
+  return (
+    <li className="p-5 border-b border-border last:border-0">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center flex-wrap gap-2">
+            <h4 className="font-medium text-sm">{doc.name}</h4>
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${tone}`}>
+              {opts.find((o) => o.v === status)?.l}
+            </span>
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground max-w-[60ch]">{doc.why}</p>
+          {supportsTitles.length > 0 && (
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              <span className="font-semibold text-ink/70">Supports:</span>{" "}
+              {supportsTitles.join(" · ")}
+            </p>
+          )}
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {doc.audience.map((a: DocAudience) => (
+              <span
+                key={a}
+                className="text-[10px] px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 ring-1 ring-border"
+              >
+                {DOC_AUDIENCE_LABELS[a]}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-1 shrink-0">
+          {opts.map((o) => (
+            <button
+              key={o.v}
+              type="button"
+              onClick={() => onStatus(o.v)}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-medium ring-1 transition-colors ${
+                status === o.v
+                  ? "bg-ink text-canvas ring-ink"
+                  : "bg-canvas ring-border hover:bg-muted"
+              }`}
+            >
+              {o.l}
+            </button>
+          ))}
+        </div>
+      </div>
+    </li>
   );
 }

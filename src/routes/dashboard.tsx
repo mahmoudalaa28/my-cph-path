@@ -273,6 +273,39 @@ function DashboardPage() {
                 );
               })}
 
+              {/* Documents Needed */}
+              <div
+                id="documents-needed"
+                className="bg-surface rounded-2xl ring-1 ring-border shadow-sm overflow-hidden scroll-mt-20"
+              >
+                <div className="p-5 border-b border-border flex items-center justify-between">
+                  <div>
+                    <h2 className="font-medium">Documents needed</h2>
+                    <p className="text-xs text-muted-foreground">
+                      Track every document your tasks depend on.
+                    </p>
+                  </div>
+                  <span className="text-xs font-medium px-2 py-1 bg-muted text-muted-foreground rounded-md">
+                    {docCounts.uploaded + docCounts.ready}/{visibleDocs.length}
+                  </span>
+                </div>
+                <ul>
+                  {visibleDocs.map((d) => (
+                    <DocumentRow
+                      key={d.id}
+                      doc={d}
+                      status={docStatuses[d.id] ?? "missing"}
+                      onStatus={(s) => setDocStatus(d.id, s)}
+                      supportsTitles={d.supportsTaskIds
+                        .map((id) => TASKS.find((t) => t.id === id)?.title)
+                        .filter(Boolean) as string[]}
+                    />
+                  ))}
+                </ul>
+              </div>
+
+
+
               {/* First week missions (soft landing teaser) */}
               <div className="bg-stone-50 rounded-2xl ring-1 ring-border p-7">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">

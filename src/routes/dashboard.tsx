@@ -16,6 +16,14 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
+  const profile = useMemo(() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("homebridge.profile") : null;
+      if (raw) return { ...DEMO_USER, ...JSON.parse(raw) };
+    } catch {}
+    return DEMO_USER;
+  }, []);
+
   const [statuses, setStatuses] = useState<Record<string, TaskStatus>>(
     Object.fromEntries(TASKS.map((t) => [t.id, t.status]))
   );
@@ -27,16 +35,16 @@ function DashboardPage() {
   const visible = useMemo(
     () =>
       TASKS.filter((t) => {
-        if (t.forFamily && DEMO_USER.type !== "family") return false;
-        if (t.forCouple && DEMO_USER.type !== "couple") return false;
+        if (t.forFamily && profile.type !== "family") return false;
+        if (t.forCouple && profile.type !== "couple") return false;
         return true;
       }),
-    []
+    [profile.type]
   );
 
   const visibleDocs = useMemo(() => {
-    const type = DEMO_USER.type;
-    const eu = DEMO_USER.euStatus;
+    const type = profile.type;
+    const eu = profile.euStatus;
     return DOCUMENTS.filter((d) =>
       d.audience.some(
         (a) =>
@@ -44,11 +52,11 @@ function DashboardPage() {
           a === type ||
           (a === "eu" && eu === "eu") ||
           (a === "non-eu" && eu === "non-eu") ||
-          a === "worker" || // demo user is a worker
-          (a === "student" && DEMO_USER.reason === "student")
+          a === "worker" ||
+          (a === "student" && profile.reason === "student")
       )
     );
-  }, []);
+  }, [profile.type, profile.euStatus, profile.reason]);
 
   const done = visible.filter((t) => statuses[t.id] === "done").length;
   const pct = Math.round((done / visible.length) * 100);
@@ -106,11 +114,11 @@ function DashboardPage() {
               Your roadmap
             </span>
             <h1 className="mt-2 font-serif text-3xl md:text-4xl font-medium leading-tight">
-              Welcome, {DEMO_USER.name.split(" ")[0]}.
+              Welcome, {profile.name.split(" ")[0]}.
             </h1>
             <p className="mt-2 text-muted-foreground">
-              {DEMO_USER.type === "family" ? "Family of four" : DEMO_USER.type} · {DEMO_USER.origin} →{" "}
-              {DEMO_USER.destination} · Arrived {new Date(DEMO_USER.arrivalDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+              {profile.type === "family" ? "Family of four" : profile.type} · {profile.origin} →{" "}
+              {profile.destination} · Arrived {new Date(profile.arrivalDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
             </p>
           </div>
 
@@ -333,7 +341,7 @@ function DashboardPage() {
             </section>
           </div>
 
-          <FeelAtHomeSection type={DEMO_USER.type} />
+          <FeelAtHomeSection type={profile.type} />
         </div>
       </main>
 

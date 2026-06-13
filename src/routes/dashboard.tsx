@@ -207,6 +207,36 @@ function DashboardPage() {
 
             {/* Right column - Stage list */}
             <section className="lg:col-span-8 space-y-6">
+              {docBlocked.length > 0 && (
+                <div className="rounded-2xl ring-1 ring-amber-300/60 bg-amber-50 p-5">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 size-6 grid place-items-center rounded-full bg-amber-200 text-amber-900 text-xs font-bold">
+                      !
+                    </span>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-amber-900">
+                        {docBlocked.length} high-priority{" "}
+                        {docBlocked.length === 1 ? "task is" : "tasks are"} blocked by missing documents
+                      </p>
+                      <ul className="mt-2 space-y-1.5 text-xs text-amber-900/90">
+                        {docBlocked.slice(0, 4).map(({ task, missing }) => (
+                          <li key={task.id}>
+                            <span className="font-medium">{task.title}</span> — needs{" "}
+                            {missing.map((m) => m.name).join(", ")}
+                          </li>
+                        ))}
+                      </ul>
+                      <a
+                        href="#documents-needed"
+                        className="mt-3 inline-flex text-xs font-semibold text-amber-900 underline underline-offset-2"
+                      >
+                        Resolve in Documents Needed →
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {STAGES.map((stage) => {
                 const stageTasks = visible.filter((t) => t.stage === stage.id);
                 if (stageTasks.length === 0) return null;

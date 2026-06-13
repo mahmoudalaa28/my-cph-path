@@ -16,6 +16,14 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
+  const profile = useMemo(() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("homebridge.profile") : null;
+      if (raw) return { ...DEMO_USER, ...JSON.parse(raw) };
+    } catch {}
+    return DEMO_USER;
+  }, []);
+
   const [statuses, setStatuses] = useState<Record<string, TaskStatus>>(
     Object.fromEntries(TASKS.map((t) => [t.id, t.status]))
   );
@@ -27,11 +35,11 @@ function DashboardPage() {
   const visible = useMemo(
     () =>
       TASKS.filter((t) => {
-        if (t.forFamily && DEMO_USER.type !== "family") return false;
-        if (t.forCouple && DEMO_USER.type !== "couple") return false;
+        if (t.forFamily && profile.type !== "family") return false;
+        if (t.forCouple && profile.type !== "couple") return false;
         return true;
       }),
-    []
+    [profile.type]
   );
 
   const visibleDocs = useMemo(() => {

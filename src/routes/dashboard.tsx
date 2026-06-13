@@ -16,12 +16,12 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
-  const profile = useMemo(() => {
+  const [profile, setProfile] = useState(DEMO_USER);
+  useEffect(() => {
     try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem("homebridge.profile") : null;
-      if (raw) return { ...DEMO_USER, ...JSON.parse(raw) };
+      const raw = localStorage.getItem("homebridge.profile");
+      if (raw) setProfile({ ...DEMO_USER, ...JSON.parse(raw) });
     } catch {}
-    return DEMO_USER;
   }, []);
 
   const [statuses, setStatuses] = useState<Record<string, TaskStatus>>(

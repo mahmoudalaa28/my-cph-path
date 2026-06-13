@@ -19,6 +19,9 @@ function DashboardPage() {
   const [statuses, setStatuses] = useState<Record<string, TaskStatus>>(
     Object.fromEntries(TASKS.map((t) => [t.id, t.status]))
   );
+  const [docStatuses, setDocStatuses] = useState<Record<string, DocStatus>>(
+    Object.fromEntries(DOCUMENTS.map((d) => [d.id, d.status]))
+  );
   const [explainTask, setExplainTask] = useState<RelocationTask | null>(null);
 
   const visible = useMemo(
@@ -31,6 +34,22 @@ function DashboardPage() {
     []
   );
 
+  const visibleDocs = useMemo(() => {
+    const type = DEMO_USER.type;
+    const eu = DEMO_USER.euStatus;
+    return DOCUMENTS.filter((d) =>
+      d.audience.some(
+        (a) =>
+          a === "everyone" ||
+          a === type ||
+          (a === "eu" && eu === "eu") ||
+          (a === "non-eu" && eu === "non-eu") ||
+          a === "worker" || // demo user is a worker
+          (a === "student" && DEMO_USER.reason === "student")
+      )
+    );
+  }, []);
+
   const done = visible.filter((t) => statuses[t.id] === "done").length;
   const pct = Math.round((done / visible.length) * 100);
 
@@ -42,15 +61,38 @@ function DashboardPage() {
     (t) => t.blockedBy && statuses[t.blockedBy] !== "done" && statuses[t.id] !== "done"
   );
 
+  // High-priority tasks blocked by missing documents
+  const docBlocked = useMemo(() => {
+    return visible
+      .filter((t) => t.priority === "high" && statuses[t.id] !== "done")
+      .map((t) => {
+        const missing = visibleDocs.filter(
+          (d) =>
+            d.supportsTaskIds.includes(t.id) &&
+            (docStatuses[d.id] === "missing" || !docStatuses[d.id])
+        );
+        return { task: t, missing };
+      })
+      .filter((x) => x.missing.length > 0);
+  }, [visible, visibleDocs, statuses, docStatuses]);
+
   const upcoming = visible
     .filter((t) => statuses[t.id] !== "done")
     .sort((a, b) => a.daysFromArrival - b.daysFromArrival)
     .slice(0, 5);
 
-  const allDocs = Array.from(new Set(visible.flatMap((t) => t.documents))).slice(0, 12);
+  const docCounts = useMemo(() => {
+    const c = { missing: 0, ready: 0, uploaded: 0, "n/a": 0 } as Record<DocStatus, number>;
+    visibleDocs.forEach((d) => {
+      c[docStatuses[d.id] ?? "missing"]++;
+    });
+    return c;
+  }, [visibleDocs, docStatuses]);
 
   const setStatus = (id: string, s: TaskStatus) =>
     setStatuses((prev) => ({ ...prev, [id]: s }));
+  const setDocStatus = (id: string, s: DocStatus) =>
+    setDocStatuses((prev) => ({ ...prev, [id]: s }));
 
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink">

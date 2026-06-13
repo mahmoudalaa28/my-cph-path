@@ -302,6 +302,24 @@ function TaskRow({
         </div>
         <p className="text-sm text-muted-foreground max-w-[58ch]">{task.description}</p>
 
+        <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+          {task.appliesTo.map((a) => (
+            <span
+              key={a}
+              className="px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 ring-1 ring-border capitalize"
+            >
+              {a.replace("-", " ")}
+            </span>
+          ))}
+        </div>
+
+        {task.commonMistake && (
+          <p className="mt-3 text-xs text-amber-800 bg-amber-50 ring-1 ring-amber-200/60 rounded-md px-3 py-2 max-w-[60ch]">
+            <span className="font-semibold">Common mistake — </span>
+            {task.commonMistake}
+          </p>
+        )}
+
         {task.documents.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
             {task.documents.map((d) => (

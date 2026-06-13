@@ -465,6 +465,7 @@ function TaskRow({
             </button>
             {task.template && (
               <button
+                onClick={() => onExplain("template")}
                 className="text-xs font-medium px-3 py-1.5 bg-surface ring-1 ring-border rounded-md hover:bg-muted"
               >
                 Open template

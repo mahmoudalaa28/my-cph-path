@@ -43,8 +43,8 @@ function DashboardPage() {
   );
 
   const visibleDocs = useMemo(() => {
-    const type = DEMO_USER.type;
-    const eu = DEMO_USER.euStatus;
+    const type = profile.type;
+    const eu = profile.euStatus;
     return DOCUMENTS.filter((d) =>
       d.audience.some(
         (a) =>
@@ -52,11 +52,11 @@ function DashboardPage() {
           a === type ||
           (a === "eu" && eu === "eu") ||
           (a === "non-eu" && eu === "non-eu") ||
-          a === "worker" || // demo user is a worker
-          (a === "student" && DEMO_USER.reason === "student")
+          a === "worker" ||
+          (a === "student" && profile.reason === "student")
       )
     );
-  }, []);
+  }, [profile.type, profile.euStatus, profile.reason]);
 
   const done = visible.filter((t) => statuses[t.id] === "done").length;
   const pct = Math.round((done / visible.length) * 100);

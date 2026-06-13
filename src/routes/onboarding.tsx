@@ -136,6 +136,23 @@ function OnboardingPage() {
           </div>
 
           <div className="bg-surface rounded-2xl ring-1 ring-border shadow-sm p-8 md:p-12">
+            {currentStep === "intro" && (
+              <div className="text-center">
+                <h2 className="font-serif text-2xl md:text-3xl font-medium leading-tight">
+                  Let's build your Copenhagen roadmap.
+                </h2>
+                <p className="mt-4 text-muted-foreground leading-relaxed max-w-md mx-auto">
+                  We'll ask 10 quick questions. Your answers generate a task roadmap that is specific to your nationality, family situation, job status, and arrival date.
+                </p>
+                <button
+                  onClick={next}
+                  className="mt-8 bg-ink text-canvas px-6 py-3 rounded-lg font-medium ring-1 ring-ink hover:bg-ink/90 transition-colors"
+                >
+                  Start →
+                </button>
+              </div>
+            )}
+
             {currentStep === "who" && (
               <Section
                 title="Who are you moving as?"

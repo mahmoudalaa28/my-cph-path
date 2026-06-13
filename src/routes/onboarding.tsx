@@ -56,7 +56,7 @@ function OnboardingPage() {
 
   // Step list adapts to type
   const steps = useMemo<string[]>(() => {
-    const base = ["who", "reason", "origin", "job", "housing", "date"];
+    const base = ["intro", "who", "reason", "origin", "job", "housing", "date"];
     if (type === "family") base.push("children");
     if (type === "couple") base.push("partner");
     base.push("danish", "status", "stress");
@@ -65,9 +65,12 @@ function OnboardingPage() {
 
   const [stepIndex, setStepIndex] = useState(0);
   const currentStep = steps[Math.min(stepIndex, steps.length - 1)];
-  const stepNum = stepIndex + 1;
-  const totalSteps = steps.length;
-  const pct = Math.round((stepNum / totalSteps) * 100);
+  const isIntro = currentStep === "intro";
+  const questionIndex = Math.max(0, stepIndex - 1);
+  const questionSteps = steps.length - 1;
+  const stepNum = questionIndex + 1;
+  const totalSteps = questionSteps;
+  const pct = isIntro ? 0 : Math.round((stepNum / totalSteps) * 100);
 
   const setStatus = (k: StatusKey, v: "yes" | "in-progress" | "no") =>
     setStatuses((s) => ({ ...s, [k]: v }));

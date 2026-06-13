@@ -486,3 +486,99 @@ function PriorityPill({ p }: { p: "high" | "medium" | "low" }) {
     </span>
   );
 }
+
+function DocStat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone: "ok" | "warn" | "mute";
+}) {
+  const tones = {
+    ok: "bg-emerald-50 text-emerald-800 ring-emerald-200/60",
+    warn: "bg-amber-50 text-amber-800 ring-amber-200/60",
+    mute: "bg-stone-50 text-stone-600 ring-border",
+  };
+  return (
+    <div className={`rounded-lg px-3 py-2 ring-1 ${tones[tone]}`}>
+      <p className="font-serif text-xl leading-none">{value}</p>
+      <p className="text-[10px] uppercase tracking-wider mt-1 font-semibold">{label}</p>
+    </div>
+  );
+}
+
+function DocumentRow({
+  doc,
+  status,
+  onStatus,
+  supportsTitles,
+}: {
+  doc: RelocationDocument;
+  status: DocStatus;
+  onStatus: (s: DocStatus) => void;
+  supportsTitles: string[];
+}) {
+  const tone =
+    status === "missing"
+      ? "text-amber-700"
+      : status === "ready"
+      ? "text-emerald-700"
+      : status === "uploaded"
+      ? "text-emerald-800"
+      : "text-muted-foreground";
+  const opts: { v: DocStatus; l: string }[] = [
+    { v: "missing", l: "Missing" },
+    { v: "ready", l: "Ready" },
+    { v: "uploaded", l: "Uploaded" },
+    { v: "n/a", l: "N/A" },
+  ];
+  return (
+    <li className="p-5 border-b border-border last:border-0">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center flex-wrap gap-2">
+            <h4 className="font-medium text-sm">{doc.name}</h4>
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${tone}`}>
+              {opts.find((o) => o.v === status)?.l}
+            </span>
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground max-w-[60ch]">{doc.why}</p>
+          {supportsTitles.length > 0 && (
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              <span className="font-semibold text-ink/70">Supports:</span>{" "}
+              {supportsTitles.join(" · ")}
+            </p>
+          )}
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {doc.audience.map((a: DocAudience) => (
+              <span
+                key={a}
+                className="text-[10px] px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 ring-1 ring-border"
+              >
+                {DOC_AUDIENCE_LABELS[a]}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-1 shrink-0">
+          {opts.map((o) => (
+            <button
+              key={o.v}
+              type="button"
+              onClick={() => onStatus(o.v)}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-medium ring-1 transition-colors ${
+                status === o.v
+                  ? "bg-ink text-canvas ring-ink"
+                  : "bg-canvas ring-border hover:bg-muted"
+              }`}
+            >
+              {o.l}
+            </button>
+          ))}
+        </div>
+      </div>
+    </li>
+  );
+}
